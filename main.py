@@ -4,14 +4,23 @@ root=Tk()
 root.geometry("1000x600")
 root.title("Paint App")
 
+
 def paint(event):
     x=event.x
     y=event.y
     currentPoint[0]=x
     currentPoint[1]=y
     if not previousPoint==[0,0]:   
-        canvas.create_polygon(previousPoint[0], previousPoint[1], currentPoint[0], currentPoint[1], fill=strokeColor.get(), width=strokeSize.get(), outline=strokeColor.get())
-        canvas.create_line(currentPoint[0], currentPoint[1], currentPoint[0]+20, currentPoint[1]+20)
+        if brushType.get()=="caligraphy pen":
+            canvas.create_polygon(previousPoint[0], previousPoint[1], currentPoint[0], currentPoint[1], fill=strokeColor.get(), width=strokeSize.get(), outline=strokeColor.get())
+            canvas.create_line(currentPoint[0], currentPoint[1], currentPoint[0]+20, currentPoint[1]+20, width=3)
+            # canvas.create_line(currentPoint[0]+1, currentPoint[1]+1, currentPoint[0]+20, currentPoint[1]+20, width=3)
+
+        elif brushType.get()=="brush":
+            canvas.create_polygon(previousPoint[0], previousPoint[1], currentPoint[0], currentPoint[1], fill=strokeColor.get(), width=strokeSize.get(), outline=strokeColor.get())
+        elif brushType.get()=="watercolor brush":
+            canvas.create_arc(currentPoint[0], currentPoint[1], currentPoint[0]+20, currentPoint[1]+20)
+
     previousPoint[0]=x
     previousPoint[1]=y
     if event.type=="5":
@@ -23,11 +32,22 @@ def selectCustomColor():
     print(selectedColor)
     if selectedColor[1]!=None:
         strokeColor.set(selectedColor[1])
+    previousCustomColor.set(selectedColor)
+
+previousCustomColor =  StringVar()
+previousCustomColor.set("white")
+previousCustomColor2 = StringVar()
+previousCustomColor.set("white")
+
 
 strokeColor=StringVar()
 strokeColor.set("black")
-options = [2,4,6,8,10]
+strokeSizeOptions = [2,4,6,8,10]
+brushTypeOptions = ["brush", "caligraphy pen", "watercolor brush"]
+brushType = StringVar()
+brushType.set("brush")
 strokeSize = IntVar()
+strokeSize.set(2)
 previousPoint=[0,0]
 currentPoint=[0,0]
 
@@ -48,6 +68,9 @@ colorFrame.grid(row=0, column=2)
 customColorFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3)
 customColorFrame.grid(row=0, column=3)
 
+brushFrame = Frame(frame1, height=100, width=200, relief=SUNKEN, borderwidth=3)
+brushFrame.grid(row=0, column=4)
+
 # frame2-canvas
 frame2 = Frame(root, height=500, width=1000, bg="yellow")
 frame2.grid(row=1, column=0)
@@ -61,7 +84,7 @@ tools=Label(toolFrame, text="Tools", fg="black", width=10)
 tools.grid(row=2, column=0)
 
 # size frame widgets
-sizeOptions=OptionMenu(sizeFrame, strokeSize, *options)
+sizeOptions=OptionMenu(sizeFrame, strokeSize, *strokeSizeOptions)
 sizeOptions.grid(row=1, column=0)
 sizeLabel = Label(sizeFrame, text="Size", width=10)
 sizeLabel.grid(row=2, column=0)
@@ -83,10 +106,22 @@ greenButton.grid(row=1, column=1)
 orangeButton = Button(colorFrame, text="Orange", bg="orange", width=10, command=lambda:strokeColor.set("orange"))
 orangeButton.grid(row=2, column=1)
 
+#brushes frame widgets
+brushOptions = OptionMenu(brushFrame, brushType, *brushTypeOptions)
+brushOptions.grid(row=1, column=0)
+brush = Label(brushFrame, text="Brushes", width=20)
+brush.grid(row=2, column=0)
+defalutBrush = Button(brushFrame, text="Defalut", width=20, command=lambda:brushType.set("brush"))
+defalutBrush.grid(row=0, column=0)
 
 # custom color button
 customButton = Button(customColorFrame, text="Custom Color", width=10, command=selectCustomColor)
 customButton.grid(row=0, column=0)
+previousColor = Button(customColorFrame, text="previous", bg=previousCustomColor.get(), width=10)
+previousColor.grid(row=1, column=0)
+previousColor2 = Button(customColorFrame, text="previous2", width=10)
+previousColor2.grid(row=2, column=0)
+
 
 # canvas
 canvas = Canvas(frame2, height=500, width=1000, bg="white")
