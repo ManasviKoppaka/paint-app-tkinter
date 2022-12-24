@@ -1,5 +1,6 @@
 from tkinter import *
-from tkinter import colorchooser
+from tkinter import colorchooser,filedialog,messagebox
+import PIL.ImageGrab as ImageGrab
 root=Tk()
 root.geometry("1000x600")
 root.title("Paint App")
@@ -29,15 +30,35 @@ def paint(event):
 
 def selectCustomColor():
     selectedColor=colorchooser.askcolor(title="Select Color")
-    print(selectedColor)
+    # print(selectedColor)
+    # print(selectedColor[1])
     if selectedColor[1]!=None:
         strokeColor.set(selectedColor[1])
-    previousCustomColor.set(selectedColor)
+        # print(previousCustomColor.get(), "pc1")
+        # print(previousCustomColor2.get(), "pc2")
+        # if previousCustomColor.get()!="white":
+        previousCustomColor2.set(previousCustomColor.get())
+        previousCustomColor.set(selectedColor[1])
+        # print(previousCustomColor.get(), "pc1")
+        previousColor["bg"]=previousCustomColor.get()
+        previousColor2["bg"]=previousCustomColor2.get()
+    # previousCustomColor.set(selectedColor)
+
 
 previousCustomColor =  StringVar()
 previousCustomColor.set("white")
 previousCustomColor2 = StringVar()
-previousCustomColor.set("white")
+previousCustomColor2.set("white")
+
+
+
+def saveImage():
+    image=filedialog.asksaveasfilename(defaultextension="jpg")
+    x = root.winfo_rootx()
+    y = root.winfo_rooty()
+    paint = ImageGrab.grab(bbox=(x,y,x+1000,y+600))
+    paint.show()
+
 
 
 strokeColor=StringVar()
@@ -70,6 +91,9 @@ customColorFrame.grid(row=0, column=3)
 
 brushFrame = Frame(frame1, height=100, width=200, relief=SUNKEN, borderwidth=3)
 brushFrame.grid(row=0, column=4)
+
+saveImageFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3)
+saveImageFrame.grid(row=0, column=5)
 
 # frame2-canvas
 frame2 = Frame(root, height=500, width=1000, bg="yellow")
@@ -117,11 +141,15 @@ defalutBrush.grid(row=0, column=0)
 # custom color button
 customButton = Button(customColorFrame, text="Custom Color", width=10, command=selectCustomColor)
 customButton.grid(row=0, column=0)
-previousColor = Button(customColorFrame, text="previous", bg=previousCustomColor.get(), width=10)
+previousColor = Button(customColorFrame, text="previous", bg=previousCustomColor.get(), width=10, command=lambda:strokeColor.set(previousCustomColor.get()))
 previousColor.grid(row=1, column=0)
-previousColor2 = Button(customColorFrame, text="previous2", width=10)
+previousColor2 = Button(customColorFrame, text="previous2", width=10, bg=previousCustomColor2.get(), command=lambda:strokeColor.set(previousCustomColor2.get()))
 previousColor2.grid(row=2, column=0)
 
+
+#Save Image Frame
+saveImage= Button(saveImageFrame, text="Save Image", width=10, command=saveImage)
+saveImage.grid(row=0, column=0)
 
 # canvas
 canvas = Canvas(frame2, height=500, width=1000, bg="white")
