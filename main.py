@@ -59,6 +59,18 @@ def saveImage():
     paint = ImageGrab.grab(bbox=(x,y,x+1000,y+600))
     paint.show()
 
+def clearCanvas():
+    clearCanvas = messagebox.askyesno("Clear Canvas", "Are you sure you want to clear the canvas?")
+    if clearCanvas == True:
+        canvas.delete("all")
+
+
+def writeText(event):
+    canvas.create_text(event.x, event.y, text=inputText.get())
+    # canvas.create_rectangle(event.x, event.y, event.x+100, event.y+100)
+
+
+inputText = StringVar()
 
 
 strokeColor=StringVar()
@@ -94,6 +106,12 @@ brushFrame.grid(row=0, column=4)
 
 saveImageFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3)
 saveImageFrame.grid(row=0, column=5)
+
+textFrame = Frame(frame1, height=100, width=200, relief=SUNKEN, borderwidth=6)
+textFrame.grid(row=0, column=6)
+
+notepadFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3)
+notepadFrame.grid(row=0, column=7)
 
 # frame2-canvas
 frame2 = Frame(root, height=500, width=1000, bg="yellow")
@@ -150,6 +168,23 @@ previousColor2.grid(row=2, column=0)
 #Save Image Frame
 saveImage= Button(saveImageFrame, text="Save Image", width=10, command=saveImage)
 saveImage.grid(row=0, column=0)
+newCanvas = Button(saveImageFrame, text="New", width=10)
+newCanvas.grid(row=1, column=0)
+clearCanvas = Button(saveImageFrame, text="Clear", width=10, command=clearCanvas, fg="red")
+clearCanvas.grid(row=2, column=0)
+
+
+#Text Frame
+textLabel= Label(textFrame, text="Write your text here", width=20, font=("arial", 12))
+textLabel.grid(row=0, column=0)
+textEntry = Entry(textFrame, width=20, textvariable=inputText, font=("arial", 12))
+textEntry.grid(row=1, column=0)
+clearText = Button(textFrame, text="Clear", width=20, command=lambda:inputText.set(""))
+clearText.grid(row=2, column=0)
+
+#Notepad Frame
+notepadText = Text(notepadFrame, height=4, width=15)
+notepadText.grid(row=0, column=0)
 
 # canvas
 canvas = Canvas(frame2, height=500, width=1000, bg="white")
@@ -158,7 +193,7 @@ canvas.grid(row=0, column=0)
 
 canvas.bind("<B1-Motion>",paint)
 canvas.bind("<ButtonRelease-1>", paint)
-
+canvas.bind("<Button-3>", writeText)
 
 root.resizable(False, False)
 root.mainloop()
